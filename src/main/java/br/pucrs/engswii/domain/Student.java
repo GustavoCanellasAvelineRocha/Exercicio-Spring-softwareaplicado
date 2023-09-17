@@ -9,7 +9,7 @@ public class Student {
     private String name;
     private int age;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long registrationNumber;
 	private String document;
 	@Embedded

@@ -14,8 +14,8 @@ public class StudentRegistration {
 
 	private StudentRepository studentRecords;
 
-
-	public void setStudentRecords(StudentRepository studentRecords) {
+	@Autowired
+	public StudentRegistration(StudentRepository studentRecords) {
 		this.studentRecords = studentRecords;
 	}
 
@@ -26,7 +26,7 @@ public class StudentRegistration {
 	public StudentRegistrationReply add(Student student) {
 		StudentRegistrationReply stdregreply = new StudentRegistrationReply();
 
-		if(studentRecords.existsById(student.getRegistrationNumber())){
+		if(studentRecords.existsByDocument(student.getDocument())){
 			System.out.println( "Student already registered");
 			stdregreply.setName(student.getName());
 			stdregreply.setAge(student.getAge());

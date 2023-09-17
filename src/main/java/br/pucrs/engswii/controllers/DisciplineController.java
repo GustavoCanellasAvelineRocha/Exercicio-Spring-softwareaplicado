@@ -4,6 +4,7 @@ import br.pucrs.engswii.domain.Discipline;
 import br.pucrs.engswii.services.DisciplineRegistration;
 import br.pucrs.engswii.services.MatriculaRegistration;
 import br.pucrs.engswii.domain.Student;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,32 +12,33 @@ import java.util.List;
 @RestController
 public class DisciplineController {
 
+    @Autowired
+    private DisciplineRegistration disciplineRegistration;
+
+    @Autowired
+    private MatriculaRegistration matriculaRegistration;
+
     @PostMapping("/register/discipline")
     public String create(@RequestBody Discipline discipline){
-        for (int i = 0; i < DisciplineRegistration.getInstance().getDisciplineRecords().size(); i++) {
-            if(discipline.getDisciplineCode().equals(DisciplineRegistration.getInstance().getDisciplineRecords().get(i).getDisciplineCode())){
-                return "Discipline Code already used";
-            }
-        }
 
         System.out.println("In registerDiscipline");
         System.out.println(discipline);
-        return DisciplineRegistration.getInstance().add(discipline);
+        return disciplineRegistration.add(discipline);
     }
 
     @GetMapping("/discipline/alldiscipline")
     public List<Discipline> findAll(){
-        return DisciplineRegistration.getInstance().getDisciplineRecords();
+        return disciplineRegistration.getDisciplineRecords();
     }
 
     @GetMapping("/discipline/allstudent/{id}")
-    public List<Student> listarEstudantesDisciplina(@PathVariable("id") String disciplineCode){
-        return MatriculaRegistration.getInstance().listarEstudantesDisciplina(disciplineCode);
+    public List<Student> listarEstudantesDisciplina(@PathVariable("id") Long disciplineCode){
+        return matriculaRegistration.listarEstudantesDisciplina(disciplineCode);
     }
 
     @GetMapping("/turma/allstudent/{id}")
     public List<Student> listarDisciplinasEstudante(@PathVariable("id") int turma){
-        return MatriculaRegistration.getInstance().listarEstudantesTurma(turma);
+        return matriculaRegistration.listarEstudantesTurma(turma);
     }
 
 }

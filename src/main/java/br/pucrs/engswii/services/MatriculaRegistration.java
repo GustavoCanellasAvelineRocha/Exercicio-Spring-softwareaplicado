@@ -1,9 +1,6 @@
 package br.pucrs.engswii.services;
 
-import br.pucrs.engswii.domain.Discipline;
-import br.pucrs.engswii.domain.Matricula;
-import br.pucrs.engswii.domain.Student;
-import br.pucrs.engswii.domain.StudentRepository;
+import br.pucrs.engswii.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +10,16 @@ import java.util.Objects;
 
 @Service
 public class MatriculaRegistration {
-    private List<Matricula> matriculaRecords;
-    private static MatriculaRegistration matriculaRegistration = null;
-
-    private MatriculaRegistration(){
-        matriculaRecords = new ArrayList<Matricula>();
-    }
-
-    public static MatriculaRegistration getInstance(){
-        if(matriculaRegistration == null){
-            matriculaRegistration = new MatriculaRegistration();
-        }
-        return matriculaRegistration;
-    }
-
-    @Autowired
+    private MatriculaRepository matriculaRepository;
     private StudentRepository studentRepository;
+    private DisciplineRepository disciplineRepository;
+    @Autowired
+    private MatriculaRegistration(MatriculaRepository matriculaRepository,StudentRepository studentRepository,DisciplineRepository disciplineRepository){
+        this.matriculaRepository = matriculaRepository;
+        this.studentRepository = studentRepository;
+        this.disciplineRepository = disciplineRepository;
+    }
+
 
     public String matricular(Long registrationNumber,Long disciplineCode,int turmaDaDisciplina){
         boolean estudante = false,disciplinaCodigo = false,turma = false;
@@ -37,29 +28,29 @@ public class MatriculaRegistration {
             estudante = true;
         }
 
-        for (Discipline discipline: DisciplineRegistration.getInstance().getDisciplineRecords()) {
-            if(Objects.equals(discipline.getDisciplineCode(), disciplineCode)){
+            if(disciplineRepository.existsById(registrationNumber)){
                 disciplinaCodigo = true;
             }
-            if(discipline.getTurmaDaDisciplina() == turmaDaDisciplina){
+            if(disciplineRepository.existsByTurmaDaDisciplina(turmaDaDisciplina)) {
                 turma = true;
             }
-        }
 
         if(estudante && disciplinaCodigo && turma){
-            matriculaRecords.add(new Matricula(registrationNumber,disciplineCode,turmaDaDisciplina));
+            matriculaRepository.save(new Matricula(registrationNumber,disciplineCode,turmaDaDisciplina));
             return "Aluno matriculado com sucesso";
         }else{
             System.out.println(estudante +" "+ disciplinaCodigo +" "+ turma);
             return "Nao foi possivel matricular o aluno";
         }
+
     }
 
     public List<Discipline> listarDisciplinasEstudante(Long id){
         ArrayList<Discipline> list = new ArrayList<>();
-        for (Matricula matricula: matriculaRecords) {
+
+        for (Matricula matricula: matriculaRepository.findAll()) {
             if(Objects.equals(matricula.getRegistrationNumber(), id)){
-                for (Discipline discipline: DisciplineRegistration.getInstance().getDisciplineRecords()) {
+                for (Discipline discipline: disciplineRepository.findAll()) {
                     if(Objects.equals(discipline.getDisciplineCode(), matricula.getDisciplineCode()) && discipline.getTurmaDaDisciplina() == matricula.getTurmaDaDisciplina())list.add(discipline);
                 }
             }
@@ -68,29 +59,31 @@ public class MatriculaRegistration {
         return list;
     }
 
-    public List<Student> listarEstudantesDisciplina(String disciplineCode){
+    public List<Student> listarEstudantesDisciplina(Long disciplineCode){
         ArrayList<Student> list = new ArrayList<>();
-//        for (Matricula matricula: matriculaRecords) {
-//            if(Objects.equals(matricula.getDisciplineCode(), disciplineCode)){
-//                for (Student student : StudentRegistration.getInstance().getStudentRecords()) {
-//                    if(student.getRegistrationNumber().equalsIgnoreCase(matricula.getRegistrationNumber())) list.add(student);
-//                }
-//            }
-//        }
+        for (Matricula matricula: matriculaRepository.findAll()) {
+            if(Objects.equals(matricula.getDisciplineCode(), disciplineCode)){
+                for (Student student : studentRepository.findAll()) {
+                    if(Objects.equals(student.getRegistrationNumber(), matricula.getRegistrationNumber())) list.add(student);
+                }
+            }
+        }
 
         return list;
     }
 
     public List<Student> listarEstudantesTurma(int turma){
         ArrayList<Student> list = new ArrayList<>();
-//        for (Matricula matricula: matriculaRecords) {
-//            if(Objects.equals(matricula.getTurmaDaDisciplina(), turma)){
-//                for (Student student : StudentRegistration.getInstance().getStudentRecords()) {
-//                    if(student.getRegistrationNumber().equalsIgnoreCase(matricula.getRegistrationNumber())) list.add(student);
-//                }
-//            }
-//        }
+        for (Matricula matricula: matriculaRepository.findAll()) {
+            if(Objects.equals(matricula.getTurmaDaDisciplina(), turma)){
+                for (Student student : studentRepository.findAll()) {
+                    if(Objects.equals(student.getRegistrationNumber(), matricula.getRegistrationNumber())) list.add(student);
+                }
+            }
+        }
 
         return list;
     }
 }
+
+

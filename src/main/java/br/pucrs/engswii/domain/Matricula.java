@@ -2,11 +2,14 @@ package br.pucrs.engswii.domain;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Matricula {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long registrationNumber;
     private Long disciplineCode;
     private int turmaDaDisciplina;
