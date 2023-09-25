@@ -31,10 +31,10 @@ public class DisciplineRegistration {
         return "Update un-successful";
     }
     public String deleteDiscipline(Long disciplineCode){
-        if(!disciplineRepository.existsById(disciplineCode))return "Delete succesful";
+        if(!disciplineRepository.existsById(disciplineCode))return "Delete un-succesful";
 
         disciplineRepository.deleteById(disciplineCode);
-        return "Delete un-successful";
+        return "Delete successful";
     }
 
     public List<Discipline> getDisciplineRecords() {

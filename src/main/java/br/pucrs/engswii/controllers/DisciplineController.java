@@ -41,4 +41,9 @@ public class DisciplineController {
         return matriculaRegistration.listarEstudantesTurma(turma);
     }
 
+    @DeleteMapping("/discipline/delete/{id}")
+    public String deletaDisciplina(@PathVariable("id") Long id){
+        return disciplineRegistration.deleteDiscipline(id);
+    }
+
 }
